@@ -22,7 +22,7 @@ export function getProductById(id: number): Product | undefined {
 
 export interface CreateOrderInput {
   shipping: ShippingInfo;
-  line_items: Omit<OrderLineItem, 'product_id'> & { product_id: number }[];
+  line_items: OrderLineItem[];
   subtotal: number;
   shipping_cost: number;
   total: number;
