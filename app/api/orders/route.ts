@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createOrder } from '@/lib/products';
+import { createOrder, type CreateOrderInput } from '@/lib/products';
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
 
     const order = createOrder({
       shipping,
-      line_items: items,
+      line_items: items as CreateOrderInput['line_items'],
       subtotal,
       shipping_cost,
       total,
