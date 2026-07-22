@@ -20,8 +20,25 @@ export function getDb(): Database.Database {
 
   initSchema(db);
   seedProducts(db);
+  applyDataCorrections(db);
 
   return db;
+}
+
+// seedProducts() only runs on an empty table, so databases initialised before a
+// seed fix keep the old value. Idempotent corrections here let existing DBs
+// self-heal without a manual re-seed. Each correction targets the exact stale
+// value so re-running is a no-op once fixed.
+function applyDataCorrections(db: Database.Database): void {
+  // Brazil Cerrado's original Unsplash photo was deleted upstream (returns 404).
+  db.prepare(
+    `UPDATE products SET image_url = @newUrl WHERE image_url = @oldUrl`
+  ).run({
+    oldUrl:
+      'https://images.unsplash.com/photo-1514432324607-a09d9b4aefda?w=800&q=80&auto=format&fit=crop',
+    newUrl:
+      'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800&q=80&auto=format&fit=crop',
+  });
 }
 
 function initSchema(db: Database.Database): void {
@@ -124,7 +141,7 @@ function seedProducts(db: Database.Database): void {
       roast_level: 'Medium-Dark',
       tasting_notes: 'Hazelnut, milk chocolate, brown sugar',
       image_url:
-        'https://images.unsplash.com/photo-1514432324607-a09d9b4aefda?w=800&q=80&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800&q=80&auto=format&fit=crop',
       description:
         'From the vast Cerrado savannah, this natural-processed Brazilian coffee is sun-dried on expansive patios. Low in acidity and heavy in body, it\'s our go-to for espresso — creamy, nutty, and reminiscent of melted milk chocolate stirred with brown sugar.',
     },
